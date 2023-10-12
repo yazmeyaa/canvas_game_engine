@@ -1,4 +1,5 @@
 import { Timer } from ".";
+import { Camera } from "./camera";
 import { EntitiesCollection } from "./entity";
 
 export class Scene {
@@ -8,6 +9,7 @@ export class Scene {
   static CREATED_SCENES_COUNT: number = 0;
   private RAFid: number | null = null;
   private _timer: Timer;
+  private camera: Camera
 
   public get timer(): Timer {
     return this._timer;
@@ -21,6 +23,9 @@ export class Scene {
 
     this._id = `scene_${Scene.CREATED_SCENES_COUNT}`;
     Scene.CREATED_SCENES_COUNT += 1;
+
+    this.camera = new Camera();
+    console.log(this.camera)
   }
 
   get id(): string {
