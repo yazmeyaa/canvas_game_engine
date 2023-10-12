@@ -48,6 +48,7 @@ export abstract class Entity {
   }
 
   public checkCollision(entity: Entity): boolean {
+    if(entity.id === this.id) return false;
     const otherSides = entity.sides;
     const thisSides = this.sides;
 

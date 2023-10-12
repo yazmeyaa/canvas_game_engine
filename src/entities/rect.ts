@@ -1,6 +1,12 @@
 import { Entity, Scene, Timer } from "../engine";
 import { InitialEntityConstructorProps } from "../engine/entity";
 
+export type RectUpdate = (
+  entity: RectEntity,
+  scene: Scene,
+  timer: Timer
+) => void;
+
 interface RectProps extends InitialEntityConstructorProps {
   fillColor?: string;
   strokeColor?: string;
@@ -9,7 +15,7 @@ interface RectProps extends InitialEntityConstructorProps {
   height?: number;
   fill?: boolean;
   stroke?: boolean;
-  updateCb?: (entity: RectEntity, scene: Scene, timer: Timer) => void;
+  updateCb?: RectUpdate;
 }
 
 export class RectEntity extends Entity {
@@ -20,9 +26,7 @@ export class RectEntity extends Entity {
   public fill: boolean = true;
   public stroke: boolean = true;
   public strokeLineWidth: number = 1;
-  private updateCb:
-    | null
-    | ((entity: RectEntity, scene: Scene, timer: Timer) => void) = null;
+  private updateCb: null | RectUpdate = null;
 
   constructor(props?: RectProps) {
     super(props);

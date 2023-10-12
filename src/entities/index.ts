@@ -1,1 +1,1 @@
-export { RectEntity } from "./rect";
+export { RectEntity, type RectUpdate } from "./rect";
