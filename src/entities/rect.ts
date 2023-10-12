@@ -1,4 +1,4 @@
-import { Entity, Timer } from "../engine";
+import { Entity, Scene, Timer } from "../engine";
 import { InitialEntityConstructorProps } from "../engine/entity";
 
 interface RectProps extends InitialEntityConstructorProps {
@@ -9,6 +9,7 @@ interface RectProps extends InitialEntityConstructorProps {
   height?: number;
   fill?: boolean;
   stroke?: boolean;
+  updateCb?: (entity: RectEntity, scene: Scene, timer: Timer) => void;
 }
 
 export class RectEntity extends Entity {
@@ -19,6 +20,9 @@ export class RectEntity extends Entity {
   public fill: boolean = true;
   public stroke: boolean = true;
   public strokeLineWidth: number = 1;
+  private updateCb:
+    | null
+    | ((entity: RectEntity, scene: Scene, timer: Timer) => void) = null;
 
   constructor(props?: RectProps) {
     super(props);
@@ -31,14 +35,16 @@ export class RectEntity extends Entity {
         fill,
         stroke,
         strokeLineWidth,
+        updateCb,
       } = props;
       if (fillColor) this.fillColor = fillColor;
       if (strokeColor) this.strokeColor = strokeColor;
       if (height) this.height = height;
       if (width) this.width = width;
-      if (fill) this.fill = fill;
-      if (stroke) this.stroke = stroke;
+      if (typeof fill !== "undefined") this.fill = fill;
+      if (typeof stroke !== "undefined") this.stroke = stroke;
       if (strokeLineWidth) this.strokeLineWidth = strokeLineWidth;
+      if (updateCb) this.updateCb = updateCb;
     }
   }
 
@@ -48,17 +54,19 @@ export class RectEntity extends Entity {
     ctx.save();
     ctx.fillStyle = this.fillColor;
     ctx.strokeStyle = this.strokeColor;
-    ctx.lineWidth = this.strokeLineWidth
+    ctx.lineWidth = this.strokeLineWidth;
     if (this.fill) {
       ctx.fillRect(x, y, width, height);
     }
-    if(this.stroke){
-        ctx.strokeRect(x, y, width, height)
+    if (this.stroke) {
+      ctx.strokeRect(x, y, width, height);
     }
     ctx.restore();
   }
+
   public update(timer: Timer): void {
-    console.log(timer);
-    this.position.x += 1
+    if (!this.scene) throw new Error("Cannot find scene in entity " + this.id);
+
+    if (this.updateCb) this.updateCb(this, this.scene, timer);
   }
 }

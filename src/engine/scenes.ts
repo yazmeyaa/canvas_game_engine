@@ -7,13 +7,17 @@ export class Scene {
   public ctx: CanvasRenderingContext2D | null = null;
   static CREATED_SCENES_COUNT: number = 0;
   private RAFid: number | null = null;
-  private timer: Timer;
+  private _timer: Timer;
+
+  public get timer(): Timer {
+    return this._timer;
+  }
 
   constructor() {
     const entitiesCollection = new EntitiesCollection();
     entitiesCollection.scene = this;
     this._entities = entitiesCollection;
-    this.timer = new Timer();
+    this._timer = new Timer();
 
     this._id = `scene_${Scene.CREATED_SCENES_COUNT}`;
     Scene.CREATED_SCENES_COUNT += 1;
@@ -37,10 +41,11 @@ export class Scene {
   }
 
   private update(): void {
-    this._entities.list.forEach((item) => item.update(this.timer));
+    this._entities.list.forEach((item) => item.update(this._timer));
   }
 
   private gameLoop(): void {
+    this._timer.update();
     this.update();
     this.render(this.ctx!);
     this.RAFid = window.requestAnimationFrame(this.gameLoop.bind(this));

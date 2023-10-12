@@ -3,6 +3,15 @@ import { Point } from "../lib/point";
 
 export interface InitialEntityConstructorProps {
   initialPosition?: { x: number; y: number };
+  width?: number;
+  height?: number;
+}
+
+interface EntitySides {
+  top: number;
+  right: number;
+  bottom: number;
+  left: number;
 }
 
 export abstract class Entity {
@@ -10,6 +19,8 @@ export abstract class Entity {
   private _id: string;
   public position: Point = new Point();
   public scene: Scene | null = null;
+  public width: number = 0;
+  public height: number = 0;
 
   public get id(): string {
     return this._id;
@@ -23,7 +34,29 @@ export abstract class Entity {
         props.initialPosition?.x,
         props.initialPosition?.y
       );
+      if (props.width) this.width = props.width;
+      if (props.height) this.height = props.height;
     }
+  }
+
+  get sides(): EntitySides {
+    const top = this.position.y;
+    const bottom = this.position.y + this.height;
+    const left = this.position.x;
+    const right = this.position.x + this.width;
+    return { top, bottom, left, right };
+  }
+
+  public checkCollision(entity: Entity): boolean {
+    const otherSides = entity.sides;
+    const thisSides = this.sides;
+
+    return (
+      otherSides.left < thisSides.right &&
+      otherSides.right > thisSides.left &&
+      otherSides.top < thisSides.bottom &&
+      otherSides.bottom > thisSides.top
+    );
   }
 
   public abstract render(ctx: CanvasRenderingContext2D): void;
