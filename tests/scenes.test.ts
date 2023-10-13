@@ -19,8 +19,8 @@ describe("Scenes testings", () => {
   })
 
   it("Must add two scenes and return this length", () => {
-    scenesCollection.addScene(new Scene())
-    scenesCollection.addScene(new Scene())
+    scenesCollection.addScene(new Scene(scenesCollection.ctx!.canvas))
+    scenesCollection.addScene(new Scene(scenesCollection.ctx!.canvas))
     expect(scenesCollection.list.length).toBe(2);
   })
 });

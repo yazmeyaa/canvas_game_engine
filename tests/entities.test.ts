@@ -5,7 +5,7 @@ describe("Testing entities", () => {
   let scene: Scene;
   beforeEach(() => {
     const ctx = document.createElement("canvas").getContext("2d")!;
-    scene = new Scene();
+    scene = new Scene(ctx.canvas);
     scene.ctx = ctx;
   });
 
