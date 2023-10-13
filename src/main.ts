@@ -86,6 +86,8 @@ scene.camera.trackEntity(left);
 
 game.engine.scenes.addScene(scene);
 game.engine.scenes.changeCurrentScene(scene);
+
+
 game.engine.scenes.currentScene?.play();
 
 console.log({ game });

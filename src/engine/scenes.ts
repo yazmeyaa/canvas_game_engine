@@ -50,8 +50,10 @@ export class Scene {
 
   private render(ctx: CanvasRenderingContext2D): void {
     ctx.save();
+    this.camera.applyTransform(ctx);
     this.drawBackground(ctx);
     this._entities.list.forEach((item) => item.render(ctx));
+    this.camera.resetTransform(ctx);
     ctx.restore();
   }
 

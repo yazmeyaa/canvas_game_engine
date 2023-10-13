@@ -55,15 +55,22 @@ export class Camera {
     this.position.x =
       this.trackedEntity!.position.x +
       this.trackedEntity!.width / 2 -
-      ctx.canvas.width / 2;
+      (ctx.canvas.width / 2) / this.scale;
     this.position.y =
       this.trackedEntity!.position.y +
       this.trackedEntity!.height / 2 -
-      ctx.canvas.height / 2;
+      (ctx.canvas.height / 2) / this.scale;
+  }
+  applyTransform(ctx: CanvasRenderingContext2D) {
+    ctx.scale(this.scale, this.scale);
+  }
+
+  resetTransform(ctx: CanvasRenderingContext2D) {
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
   }
 
   zoomIn() {
-    this.scale *= 1.1;
+    this.scale *= 1.0005;
   }
 
   zoomOut() {
