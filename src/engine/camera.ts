@@ -1,4 +1,4 @@
-import { Entity, Timer } from ".";
+import { Entity } from ".";
 import { Point } from "../lib/point";
 
 export type CameraViewBoundsProps = {
@@ -9,18 +9,16 @@ export type CameraViewBoundsProps = {
 };
 
 export class CameraViewBounds {
-  minX: number = 0;
-  maxX: number = 800;
-  minY: number = 0;
-  maxY: number = 600;
+  minX: number;
+  maxX: number;
+  minY: number;
+  maxY: number;
 
-  constructor(props?: CameraViewBoundsProps) {
-    if (props) {
-      this.minX = Math.min(props.minX, props.maxX);
-      this.maxX = Math.max(props.minX, props.maxX);
-      this.minY = Math.min(props.minY, props.maxY);
-      this.maxY = Math.max(props.minY, props.maxY);
-    }
+  constructor(props: CameraViewBoundsProps) {
+    this.minX = props.minX;
+    this.maxX = props.maxX;
+    this.minY = props.minY;
+    this.maxY = props.maxY;
   }
 }
 
@@ -28,9 +26,10 @@ export class Camera {
   position: Point = new Point();
   viewBounds: CameraViewBounds;
   trackedEntity: Entity | null = null;
+  scale: number = 1;
 
-  constructor() {
-    this.viewBounds = new CameraViewBounds();
+  constructor(props: CameraViewBoundsProps) {
+    this.viewBounds = new CameraViewBounds(props);
   }
 
   setViewBounds(bounds: CameraViewBoundsProps): void {
@@ -46,37 +45,28 @@ export class Camera {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  update(timer?: Timer) {
-    console.log(this.position);
+  update(ctx: CanvasRenderingContext2D) {
     if (this.trackedEntity) {
-      this.centerOnTrackedEntity();
+      this.centerOnTrackedEntity(ctx);
     }
   }
-  private centerOnTrackedEntity() {
+
+  private centerOnTrackedEntity(ctx: CanvasRenderingContext2D) {
     this.position.x =
-      this.trackedEntity!.position.x -
-      this.viewBounds.maxX / 2 +
-      this.trackedEntity!.width / 2;
+      this.trackedEntity!.position.x +
+      this.trackedEntity!.width / 2 -
+      ctx.canvas.width / 2;
     this.position.y =
-      this.trackedEntity!.position.y -
-      this.viewBounds.maxY / 2 +
-      this.trackedEntity!.height / 2;
-
-    this.position.x = Math.max(
-      this.viewBounds.minX,
-      Math.min(this.viewBounds.maxX, this.position.x)
-    );
-    this.position.y = Math.max(
-      this.viewBounds.minY,
-      Math.min(this.viewBounds.maxY, this.position.y)
-    );
+      this.trackedEntity!.position.y +
+      this.trackedEntity!.height / 2 -
+      ctx.canvas.height / 2;
   }
 
-  applyTransform(ctx: CanvasRenderingContext2D) {
-    ctx.translate(-this.position.x, -this.position.y);
+  zoomIn() {
+    this.scale *= 1.1;
   }
 
-  resetTransform(ctx: CanvasRenderingContext2D) {
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
+  zoomOut() {
+    this.scale /= 1.1;
   }
 }

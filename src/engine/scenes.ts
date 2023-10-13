@@ -19,7 +19,7 @@ export class Scene {
     return this._timer;
   }
 
-  constructor() {
+  constructor(canvas: HTMLCanvasElement) {
     const entitiesCollection = new EntitiesCollection();
     entitiesCollection.scene = this;
     this._entities = entitiesCollection;
@@ -28,8 +28,12 @@ export class Scene {
     this._id = `scene_${Scene.CREATED_SCENES_COUNT}`;
     Scene.CREATED_SCENES_COUNT += 1;
 
-    this._camera = new Camera();
-    console.log(this._camera);
+    this._camera = new Camera({
+      maxX: canvas.width + 1000,
+      maxY: canvas.height + 1000,
+      minX: 0,
+      minY: 0,
+    });
   }
 
   get id(): string {
@@ -45,15 +49,15 @@ export class Scene {
   }
 
   private render(ctx: CanvasRenderingContext2D): void {
-    this.camera.applyTransform(ctx);
+    ctx.save();
     this.drawBackground(ctx);
     this._entities.list.forEach((item) => item.render(ctx));
-    this.camera.resetTransform(ctx);
+    ctx.restore();
   }
 
   private update(): void {
     this._entities.list.forEach((item) => item.update(this._timer));
-    this.camera.update(this.timer);
+    this.camera.update(this.ctx!);
   }
 
   private gameLoop(): void {

@@ -10,13 +10,30 @@ display: block;
 `;
 
 const game = new Game(canvas);
-const scene = new Scene();
+const scene = new Scene(canvas);
+
+const keys: Record<string, boolean> = {};
+
+window.addEventListener("keydown", (event) => {
+  keys[event.code] = true;
+});
+
+window.addEventListener("keyup", (event) => {
+  keys[event.code] = false;
+});
 
 const leftRectUpdate: RectUpdate = (entity, scene) => {
-  entity.time += scene.timer.dt; 
-  entity.position.x = scene.ctx!.canvas.width / 2 + entity.amplitude * Math.sin(entity.frequency * entity.time);
-  if (entity.position.x >= canvas.width) entity.position.x = entity.width * -1;
+  const SPEED = 400;
+  const { dt } = scene.timer;
   let colided = false;
+
+  console.log(entity.position);
+
+  if (keys["KeyA"] === true) entity.position.x -= SPEED * dt;
+  if (keys["KeyD"] === true) entity.position.x += SPEED * dt;
+  if (keys["KeyW"] === true) entity.position.y -= SPEED * dt;
+  if (keys["KeyS"] === true) entity.position.y += SPEED * dt;
+
   for (const other of scene.entities.list) {
     if (entity.checkCollision(other)) {
       colided = true;
@@ -24,7 +41,7 @@ const leftRectUpdate: RectUpdate = (entity, scene) => {
     }
   }
   if (colided) {
-    entity.strokeColor = "green";
+    entity.strokeColor = "black";
     entity.strokeLineWidth = 4;
   } else {
     entity.strokeColor = "blue";
@@ -33,7 +50,7 @@ const leftRectUpdate: RectUpdate = (entity, scene) => {
 };
 
 const left = new RectEntity({
-  initialPosition: { x: canvas.width / 2 - 300, y: canvas.height / 2 },
+  initialPosition: { x: 0, y: 0 },
   height: 40,
   width: 40,
   fill: false,
@@ -41,15 +58,30 @@ const left = new RectEntity({
   updateCb: leftRectUpdate,
 });
 
-const right = new RectEntity({
-  initialPosition: { x: canvas.width / 2, y: canvas.height / 2 },
-  height: 40,
-  width: 40,
-  fill: false,
-  strokeColor: "red",
-});
+// const right = new RectEntity({
+//   initialPosition: { x: canvas.width / 2, y: canvas.height / 2 },
+//   height: 40,
+//   width: 40,
+//   fill: false,
+//   strokeColor: "red",
+// });
+// scene.entities.addEntity(right);
+
+for (let i = 0; i < 800; i++) {
+  scene.entities.addEntity(
+    new RectEntity({
+      initialPosition: {
+        x: 500 + Math.floor(Math.random() * 6000),
+        y: Math.floor(Math.random() * 200),
+      },
+      fillColor: ["red", "green", "blue", "yellow", "pink"][
+        Math.floor(Math.random() * 4)
+      ],
+    })
+  );
+}
+
 scene.entities.addEntity(left);
-scene.entities.addEntity(right);
 scene.camera.trackEntity(left);
 
 game.engine.scenes.addScene(scene);

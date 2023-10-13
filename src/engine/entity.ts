@@ -26,6 +26,13 @@ export abstract class Entity {
     return this._id;
   }
 
+  get coordinatesForRender() {
+    const x = this.position.x - this.scene!.camera.position.x;
+    const y = this.position.y - this.scene!.camera.position.y;
+
+    return { x, y };
+  }
+
   constructor(props?: InitialEntityConstructorProps) {
     Entity.ENTITIES_COUNT += 1;
     this._id = `entity_${Entity.ENTITIES_COUNT}`;
