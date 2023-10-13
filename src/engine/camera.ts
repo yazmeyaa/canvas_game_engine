@@ -45,26 +45,38 @@ export class Camera {
       entity.position.y - this.viewBounds.maxY / 2 + entity.height / 2;
   }
 
-  update(timer: Timer) {
-    console.log(timer);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  update(timer?: Timer) {
+    console.log(this.position);
     if (this.trackedEntity) {
-      this.position.x =
-        this.trackedEntity.position.x -
-        this.viewBounds.maxX / 2 +
-        this.trackedEntity.width / 2;
-      this.position.y =
-        this.trackedEntity.position.y -
-        this.viewBounds.maxY / 2 +
-        this.trackedEntity.height / 2;
-
-      this.position.x = Math.max(
-        this.viewBounds.minX,
-        Math.min(this.viewBounds.maxX, this.position.x)
-      );
-      this.position.y = Math.max(
-        this.viewBounds.minY,
-        Math.min(this.viewBounds.maxY, this.position.y)
-      );
+      this.centerOnTrackedEntity();
     }
+  }
+  private centerOnTrackedEntity() {
+    this.position.x =
+      this.trackedEntity!.position.x -
+      this.viewBounds.maxX / 2 +
+      this.trackedEntity!.width / 2;
+    this.position.y =
+      this.trackedEntity!.position.y -
+      this.viewBounds.maxY / 2 +
+      this.trackedEntity!.height / 2;
+
+    this.position.x = Math.max(
+      this.viewBounds.minX,
+      Math.min(this.viewBounds.maxX, this.position.x)
+    );
+    this.position.y = Math.max(
+      this.viewBounds.minY,
+      Math.min(this.viewBounds.maxY, this.position.y)
+    );
+  }
+
+  applyTransform(ctx: CanvasRenderingContext2D) {
+    ctx.translate(-this.position.x, -this.position.y);
+  }
+
+  resetTransform(ctx: CanvasRenderingContext2D) {
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
   }
 }

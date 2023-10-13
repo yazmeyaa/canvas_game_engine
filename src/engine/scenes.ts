@@ -9,7 +9,11 @@ export class Scene {
   static CREATED_SCENES_COUNT: number = 0;
   private RAFid: number | null = null;
   private _timer: Timer;
-  private camera: Camera
+  private _camera: Camera;
+
+  public get camera(): Camera {
+    return this._camera;
+  }
 
   public get timer(): Timer {
     return this._timer;
@@ -24,8 +28,8 @@ export class Scene {
     this._id = `scene_${Scene.CREATED_SCENES_COUNT}`;
     Scene.CREATED_SCENES_COUNT += 1;
 
-    this.camera = new Camera();
-    console.log(this.camera)
+    this._camera = new Camera();
+    console.log(this._camera);
   }
 
   get id(): string {
@@ -41,12 +45,15 @@ export class Scene {
   }
 
   private render(ctx: CanvasRenderingContext2D): void {
+    this.camera.applyTransform(ctx);
     this.drawBackground(ctx);
     this._entities.list.forEach((item) => item.render(ctx));
+    this.camera.resetTransform(ctx);
   }
 
   private update(): void {
     this._entities.list.forEach((item) => item.update(this._timer));
+    this.camera.update(this.timer);
   }
 
   private gameLoop(): void {

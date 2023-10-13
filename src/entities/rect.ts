@@ -27,6 +27,9 @@ export class RectEntity extends Entity {
   public stroke: boolean = true;
   public strokeLineWidth: number = 1;
   private updateCb: null | RectUpdate = null;
+  public amplitude: number = 500; // амплитуда движения
+  public frequency: number = 2; // частота движения
+  public time: number = 0;
 
   constructor(props?: RectProps) {
     super(props);
@@ -70,6 +73,9 @@ export class RectEntity extends Entity {
 
   public update(timer: Timer): void {
     if (!this.scene) throw new Error("Cannot find scene in entity " + this.id);
+    // увеличиваем время с каждым обновлением
+    // Используем функцию синуса для движения влево-вправо
+
 
     if (this.updateCb) this.updateCb(this, this.scene, timer);
   }
