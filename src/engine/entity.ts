@@ -55,7 +55,7 @@ export abstract class Entity {
   }
 
   public checkCollision(entity: Entity): boolean {
-    if(entity.id === this.id) return false;
+    if (entity.id === this.id) return false;
     const otherSides = entity.sides;
     const thisSides = this.sides;
 
@@ -72,23 +72,27 @@ export abstract class Entity {
 }
 
 export class EntitiesCollection {
-  private _entities: Array<Entity>;
-  public get list(): Array<Entity> {
+  private _entities: Map<string, Entity>;
+  public get list(): Map<string, Entity> {
     return this._entities;
   }
   public scene: Scene | null = null;
 
   constructor() {
-    this._entities = [];
+    this._entities = new Map();
   }
 
   public addEntity(entity: Entity) {
     entity.scene = this.scene;
-    this._entities.push(entity);
+    this._entities.set(entity.id, entity);
+  }
+
+  public getAllEntities(): Entity[] {
+    return Array.from(this._entities.values());
   }
 
   public getEntityById(id: string): Entity | null {
-    const entity = this._entities.find((item) => item.id === id);
+    const entity = this._entities.get(id);
     if (!entity) return null;
     return entity;
   }

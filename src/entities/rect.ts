@@ -7,7 +7,7 @@ export type RectUpdate = (
   timer: Timer
 ) => void;
 
-interface RectProps extends InitialEntityConstructorProps {
+export interface RectProps extends InitialEntityConstructorProps {
   fillColor?: string;
   strokeColor?: string;
   strokeLineWidth?: number;
@@ -55,7 +55,6 @@ export class RectEntity extends Entity {
   public render(ctx: CanvasRenderingContext2D): void {
     const { x, y } = this.coordinatesForRender;
     const { width, height } = this;
-
 
     ctx.save();
     ctx.fillStyle = this.fillColor;

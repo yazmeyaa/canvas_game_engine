@@ -1,6 +1,7 @@
 import { Scene } from "./engine";
 import { RectEntity, RectUpdate } from "./entities";
 import { Game } from "./game";
+import { PointBaseCoordiantes } from "./lib/point";
 
 const canvas = document.getElementById("canvas") as HTMLCanvasElement;
 canvas.height = window.innerHeight;
@@ -27,26 +28,23 @@ const leftRectUpdate: RectUpdate = (entity, scene) => {
   const { dt } = scene.timer;
   let colided = false;
 
-  console.log(entity.position);
-
   if (keys["KeyA"] === true) entity.position.x -= SPEED * dt;
   if (keys["KeyD"] === true) entity.position.x += SPEED * dt;
   if (keys["KeyW"] === true) entity.position.y -= SPEED * dt;
   if (keys["KeyS"] === true) entity.position.y += SPEED * dt;
 
-  for (const other of scene.entities.list) {
+  for (const other of scene.entities.list.values()) {
     if (entity.checkCollision(other)) {
       colided = true;
       break;
     }
   }
   if (colided) {
-    entity.strokeColor = "black";
-    entity.strokeLineWidth = 4;
-  } else {
-    entity.strokeColor = "blue";
-    entity.strokeLineWidth = 1;
-  }
+    alert("Game over!");
+    entity.position.x = 0;
+    entity.position.y = 0;
+    Object.keys(keys).forEach((item) => delete keys[item]);
+  } 
 };
 
 const left = new RectEntity({
@@ -54,7 +52,8 @@ const left = new RectEntity({
   height: 40,
   width: 40,
   fill: false,
-  strokeColor: "blue",
+  strokeColor: "white",
+  strokeLineWidth: 2,
   updateCb: leftRectUpdate,
 });
 
@@ -67,18 +66,40 @@ const left = new RectEntity({
 // });
 // scene.entities.addEntity(right);
 
-for (let i = 0; i < 800; i++) {
-  scene.entities.addEntity(
-    new RectEntity({
-      initialPosition: {
-        x: 500 + Math.floor(Math.random() * 6000),
-        y: Math.floor(Math.random() * 200),
-      },
+const updateObstacle: ObstacleUpdate = (entity, scene) => {
+  entity.position.y =
+    entity.initialPosition.y +
+    300 * Math.cos(entity.speed * scene.timer.elapsedTime);
+};
+
+type ObstacleUpdate = (entity: Obstacle, scene: Scene) => void;
+
+class Obstacle extends RectEntity {
+  public speed = Math.random();
+  public initialPosition: PointBaseCoordiantes;
+
+  constructor() {
+    const initialPosition = {
+      x: 500 + Math.floor(Math.random() * 6000),
+      y: -400 + Math.floor(Math.random() * 800),
+    };
+    super({
+      initialPosition,
       fillColor: ["red", "green", "blue", "yellow", "pink"][
         Math.floor(Math.random() * 4)
       ],
-    })
-  );
+    });
+    this.initialPosition = initialPosition;
+  }
+
+  public override update() {
+    super.update(this.scene!.timer);
+    updateObstacle(this, this.scene!);
+  }
+}
+
+for (let i = 0; i < 300; i++) {
+  scene.entities.addEntity(new Obstacle());
 }
 
 scene.entities.addEntity(left);
@@ -87,7 +108,4 @@ scene.camera.trackEntity(left);
 game.engine.scenes.addScene(scene);
 game.engine.scenes.changeCurrentScene(scene);
 
-
 game.engine.scenes.currentScene?.play();
-
-console.log({ game });

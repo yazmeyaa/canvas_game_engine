@@ -29,8 +29,8 @@ export class Scene {
     Scene.CREATED_SCENES_COUNT += 1;
 
     this._camera = new Camera({
-      maxX: canvas.width + 1000,
-      maxY: canvas.height + 1000,
+      maxX: canvas.width,
+      maxY: canvas.height,
       minX: 0,
       minY: 0,
     });
@@ -46,6 +46,9 @@ export class Scene {
 
   private drawBackground(ctx: CanvasRenderingContext2D) {
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctx.rect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctx.fillStyle = 'black';
+    ctx.fill();
   }
 
   private render(ctx: CanvasRenderingContext2D): void {
