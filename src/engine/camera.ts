@@ -37,10 +37,7 @@ export class Camera {
   }
 
   public get centerCameraCoordinates(): { x: number; y: number } {
-    return {
-      x: this.position.x + this.viewBounds.maxX / 2,
-      y: this.position.y + this.viewBounds.maxY / 2,
-    };
+    return this.getCameraCenterByCoords(this.position);
   }
 
   setViewBounds(bounds: CameraViewBoundsProps): void {
@@ -49,10 +46,9 @@ export class Camera {
 
   trackEntity(entity: Entity) {
     this._trackedEntity = entity;
-    this.position.x =
-      entity.position.x - this.viewBounds.maxX / 2 + entity.width / 2;
-    this.position.y =
-      entity.position.y - this.viewBounds.maxY / 2 + entity.height / 2;
+    const x = entity.position.x - this.viewBounds.maxX / 2 + entity.width / 2;
+    const y = entity.position.y - this.viewBounds.maxY / 2 + entity.height / 2;
+    this.position.setCoords(x, y);
   }
 
   untrackEntity() {
@@ -66,20 +62,20 @@ export class Camera {
   }
 
   private centerOnTrackedEntity(ctx: CanvasRenderingContext2D) {
-    this.position.x =
+    const x =
       this._trackedEntity!.position.x +
       this._trackedEntity!.width / 2 -
       ctx.canvas.width / 2;
-    this.position.y =
+    const y =
       this._trackedEntity!.position.y +
       this._trackedEntity!.height / 2 -
       ctx.canvas.height / 2;
+    this.position.setCoords(x, y);
   }
 
   public setCoordinates(point: PointBaseCoordiantes): void {
     const { x, y } = point;
-    this.position.x = x;
-    this.position.y = y;
+    this.position.setCoords(x, y);
   }
 
   private getCameraCenterByCoords(
@@ -95,9 +91,7 @@ export class Camera {
    * @param point
    */
   public moveTo(point: Point | PointBaseCoordiantes): void {
-    if (point instanceof Point) this.position.setCoords(point.getCoords());
-    else if ("x" in point && "y" in point)
-      this.setCoordinates(this.getCameraCenterByCoords(point));
+    this.setCoordinates(point);
   }
 
   applyTransform(ctx: CanvasRenderingContext2D) {

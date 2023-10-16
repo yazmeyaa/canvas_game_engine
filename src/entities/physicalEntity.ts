@@ -11,4 +11,8 @@ export class PhysicalEntity extends Entity {
   public update(timer: Timer): void {
     if (this._update) this._update(timer);
   }
+
+  applyGravity() {
+    
+  }
 }

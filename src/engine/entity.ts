@@ -41,10 +41,12 @@ export abstract class Entity {
     Entity.ENTITIES_COUNT += 1;
     this._id = `entity_${Entity.ENTITIES_COUNT}`;
     if (props) {
-      this.position = new Point(
-        props.initialPosition?.x,
-        props.initialPosition?.y
-      );
+      if (props.initialPosition) {
+        this.position = new Point(
+          props.initialPosition?.x,
+          props.initialPosition?.y
+        );
+      }
       if (props.width) this.width = props.width;
       if (props.height) this.height = props.height;
       if (props.update) this._update = props.update;
