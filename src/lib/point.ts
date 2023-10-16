@@ -29,8 +29,17 @@ export class Point {
     this._y = point.y;
   }
 
-  constructor(x?: number, y?: number) {
-    if (x) this._x = x;
+  public constructor();
+  public constructor(x?: PointBaseCoordiantes);
+  public constructor(x?: number, y?: number);
+  public constructor(xOrPoint?: number | PointBaseCoordiantes, y?: number) {
+    if(typeof xOrPoint === 'object') {
+      const {x: _x, y} = xOrPoint
+      this._x = _x;
+      this.y = y;
+      return;
+    }
+    if (xOrPoint) this._x = xOrPoint;
     if (y) this._y = y;
   }
 }

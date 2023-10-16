@@ -2,6 +2,10 @@ import { Timer } from ".";
 import { Camera } from "./camera";
 import { EntitiesCollection } from "./entity";
 
+export interface SceneConfig {
+  enablePhysics: boolean
+}
+
 export class Scene {
   private readonly _entities: EntitiesCollection;
   private readonly _id: string;
@@ -10,6 +14,10 @@ export class Scene {
   private RAFid: number | null = null;
   private _timer: Timer;
   private _camera: Camera;
+  private _physics: ScenePhysics;
+  public get physics(): ScenePhysics {
+    return this._physics;
+  }
 
   public get camera(): Camera {
     return this._camera;
@@ -24,6 +32,7 @@ export class Scene {
     entitiesCollection.scene = this;
     this._entities = entitiesCollection;
     this._timer = new Timer();
+    this._physics = new ScenePhysics();
 
     this._id = `scene_${Scene.CREATED_SCENES_COUNT}`;
     Scene.CREATED_SCENES_COUNT += 1;
@@ -83,6 +92,18 @@ export class Scene {
   public stop() {
     if (!this.RAFid) return;
     window.cancelAnimationFrame(this.RAFid);
+  }
+}
+
+export class ScenePhysics {
+  private _worldGravity: number = 9.8;
+
+  public get worldGravity(): number {
+    return this._worldGravity;
+  }
+
+  public setGravity(number: number) {
+    this._worldGravity = number;
   }
 }
 

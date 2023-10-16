@@ -5,6 +5,8 @@ export interface InitialEntityConstructorProps {
   initialPosition?: { x: number; y: number };
   width?: number;
   height?: number;
+  update?: (timer: Timer) => void;
+  render?: (ctx: CanvasRenderingContext2D) => void;
 }
 
 interface EntitySides {
@@ -21,6 +23,8 @@ export abstract class Entity {
   public scene: Scene | null = null;
   public width: number = 0;
   public height: number = 0;
+  protected _update: ((timer: Timer) => void) | null = null;
+  protected _render: ((ctx: CanvasRenderingContext2D) => void) | null = null;
 
   public get id(): string {
     return this._id;
@@ -43,6 +47,8 @@ export abstract class Entity {
       );
       if (props.width) this.width = props.width;
       if (props.height) this.height = props.height;
+      if (props.update) this._update = props.update;
+      if (props.render) this._render = props.render;
     }
   }
 
