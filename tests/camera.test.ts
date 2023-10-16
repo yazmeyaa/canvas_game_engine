@@ -1,7 +1,7 @@
 import { Scene } from "../src/engine";
 import { RectEntity } from "../src/entities";
 import { Game } from "../src/game";
-import { Point, PointBaseCoordiantes } from "../src/lib/point";
+import { Point } from "../src/lib/point";
 
 describe("Testing camera", () => {
   const canvas = document.createElement("canvas");
@@ -13,53 +13,80 @@ describe("Testing camera", () => {
     game.engine.scenes.addScene(scene);
   });
 
-  test("Changing camera coordinates (moving camera).", () => {
-    const point = new Point(15, 15);
-    scene.camera.setCoordinates(point);
-    expect(scene.camera.position.getCoords()).toMatchObject(point.getCoords());
+  test("Initial position should be (0, 0)", () => {
+    expect(scene.camera.position.x).toBe(0);
+    expect(scene.camera.position.y).toBe(0);
+  });
 
-    const expectedCoordinates: PointBaseCoordiantes = {
-      x: point.x + scene.ctx!.canvas.width / 2,
-      y: point.y + scene.ctx!.canvas.height / 2,
-    };
+  test("Initial viewBounds should be set correctly", () => {
+    expect(scene.camera.viewBounds.minX).toBe(0);
+    expect(scene.camera.viewBounds.maxX).toBe(canvas.width);
+    expect(scene.camera.viewBounds.minY).toBe(0);
+    expect(scene.camera.viewBounds.maxY).toBe(canvas.height);
+  });
 
-    scene.camera.moveTo(point);
-    expect(scene.camera.centerCameraCoordinates).toMatchObject(
-      expectedCoordinates
+  test("Tracking entity should update camera position", () => {
+    const entity = new RectEntity();
+    entity.position.setCoords(100, 100);
+    entity.width = 50;
+    entity.height = 50;
+
+    scene.camera.update(scene.ctx!);
+    scene.camera.trackEntity(entity);
+
+    expect(scene.camera.centerCameraCoordinates.x).toBe(
+      entity.position.x + entity.width / 2
+    );
+    expect(scene.camera.centerCameraCoordinates.y).toBe(
+      entity.position.y + entity.height / 2
     );
   });
 
-  test("Tracking object. Expected to camera's center coordinates will be equals to coordinates of tracked object", () => {
-    //* Camera align to object...
-    const trackedObject = new RectEntity({
-      initialPosition: {
-        x: 0,
-        y: 0,
-      },
-      width: 10,
-      height: 10,
-    });
-    scene.camera.trackEntity(trackedObject);
-    scene.camera.update(scene.ctx!);
-    expect(scene.camera.centerCameraCoordinates).toMatchObject({
-      x: trackedObject.position.x + trackedObject.width / 2,
-      y: trackedObject.position.y + trackedObject.height / 2,
-    });
+  test("Untracking entity should set trackedEntity to null", () => {
+    const entity = new RectEntity();
+    scene.camera.trackEntity(entity);
 
-    //* Move object...
-
-    trackedObject.position.x = 200;
-    trackedObject.position.y = 150;
-
-    scene.camera.update(scene.ctx!);
-
-    expect(scene.camera.centerCameraCoordinates).toMatchObject({
-      x: trackedObject.position.x + trackedObject.width / 2,
-      y: trackedObject.position.y + trackedObject.height / 2,
-    });
-
-    //* Untrack entity.
     scene.camera.untrackEntity();
-    expect(scene.camera.trackedEntity).toBe(null);
+
+    expect(scene.camera.trackedEntity).toBeNull();
+  });
+
+  test("MoveTo should update camera position", () => {
+    const newPosition = new Point(200, 200);
+    scene.camera.moveTo(newPosition);
+    scene.camera.update(scene.ctx!);
+    const center = scene.camera.centerCameraCoordinates;
+
+    const cameraCenter = {
+      x: scene.camera.viewBounds.maxX / 2 + 200,
+      y: scene.camera.viewBounds.maxY / 2 + 200,
+    };
+
+    expect(center.x).toBe(cameraCenter.x);
+    expect(center.y).toBe(cameraCenter.y);
+  });
+
+  test("ZoomIn should increase scale", () => {
+    const initialScale = scene.camera.scale;
+    scene.camera.zoomIn();
+    expect(scene.camera.scale).toBeGreaterThan(initialScale);
+  });
+
+  test("ZoomOut should decrease scale", () => {
+    const initialScale = scene.camera.scale;
+    scene.camera.zoomOut();
+    expect(scene.camera.scale).toBeLessThan(initialScale);
+  });
+
+  test("CenterCameraCoordinates should calculate correct center", () => {
+    scene.camera.moveTo({ x: 50, y: 50 });
+    scene.camera.update(scene.ctx!);
+    const center = scene.camera.centerCameraCoordinates;
+    const cameraCenter = {
+      x: scene.camera.viewBounds.maxX / 2 + 50,
+      y: scene.camera.viewBounds.maxY / 2 + 50,
+    };
+    expect(center.x).toBe(cameraCenter.x);
+    expect(center.y).toBe(cameraCenter.y);
   });
 });
