@@ -1,7 +1,6 @@
 import { Scene } from "./engine";
 import { RectEntity, RectUpdate } from "./entities";
 import { Game } from "./game";
-import { PointBaseCoordiantes } from "./lib/point";
 
 const canvas = document.getElementById("canvas") as HTMLCanvasElement;
 canvas.height = window.innerHeight;
@@ -57,50 +56,6 @@ const left = new RectEntity({
   updateCb: leftRectUpdate,
 });
 
-// const right = new RectEntity({
-//   initialPosition: { x: canvas.width / 2, y: canvas.height / 2 },
-//   height: 40,
-//   width: 40,
-//   fill: false,
-//   strokeColor: "red",
-// });
-// scene.entities.addEntity(right);
-
-const updateObstacle: ObstacleUpdate = (entity, scene) => {
-  entity.position.y =
-    entity.initialPosition.y +
-    300 * Math.cos(entity.speed * scene.timer.elapsedTime);
-};
-
-type ObstacleUpdate = (entity: Obstacle, scene: Scene) => void;
-
-class Obstacle extends RectEntity {
-  public speed = Math.random();
-  public initialPosition: PointBaseCoordiantes;
-
-  constructor() {
-    const initialPosition = {
-      x: 500 + Math.floor(Math.random() * 6000),
-      y: -400 + Math.floor(Math.random() * 800),
-    };
-    super({
-      initialPosition,
-      fillColor: ["red", "green", "blue", "yellow", "pink"][
-        Math.floor(Math.random() * 4)
-      ],
-    });
-    this.initialPosition = initialPosition;
-  }
-
-  public override update() {
-    super.update(this.scene!.timer);
-    updateObstacle(this, this.scene!);
-  }
-}
-
-for (let i = 0; i < 300; i++) {
-  scene.entities.addEntity(new Obstacle());
-}
 
 scene.entities.addEntity(left);
 scene.camera.trackEntity(left);
