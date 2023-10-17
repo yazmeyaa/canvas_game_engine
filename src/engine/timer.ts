@@ -13,6 +13,7 @@ export class Timer {
 
   public reset(): void {
     this._elapsedTime = 0;
+    this._dt = 0;
   }
 
   public update() {
