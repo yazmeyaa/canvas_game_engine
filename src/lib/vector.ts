@@ -6,11 +6,16 @@ export class Vector2D {
   public a: Point;
   public b: Point;
   constructor(
-    a: VectorConstructorArgumentType,
-    b: VectorConstructorArgumentType
+    a?: VectorConstructorArgumentType,
+    b?: VectorConstructorArgumentType
   ) {
-    this.a = new Point(a);
-    this.b = new Point(b);
+    if (!a && !b) {
+      this.a = new Point();
+      this.b = new Point();
+    } else {
+      this.a = new Point(a);
+      this.b = new Point(b);
+    }
   }
 
   public set(a: PointBaseCoordiantes | Point, b: PointBaseCoordiantes | Point) {

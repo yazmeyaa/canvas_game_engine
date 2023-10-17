@@ -23,6 +23,30 @@ export class Point {
     this._y = y;
   }
 
+  public setX(x: number): void {
+    this._x = x;
+  }
+
+  public setY(y: number): void {
+    this._y = y;
+  }
+
+  public addX(x: number) {
+    this._x += x;
+  }
+
+  public addY(y: number) {
+    this._y += y;
+  }
+
+  public subtractX(x: number) {
+    this._x -= x;
+  }
+
+  public subtractY(y: number) {
+    this._y -= y;
+  }
+
   public constructor();
   public constructor(point?: PointBaseCoordiantes);
   public constructor(x: number, y: number);

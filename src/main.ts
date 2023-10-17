@@ -1,5 +1,6 @@
 import { Scene } from "./engine";
-import { RectEntity, RectUpdate } from "./entities";
+import { RectEntity } from "./entities";
+import { PhysicalRect, PhysicalRectUpdate } from "./entities/physicalRect";
 import { Game } from "./game";
 
 const canvas = document.getElementById("canvas") as HTMLCanvasElement;
@@ -22,15 +23,17 @@ window.addEventListener("keyup", (event) => {
   keys[event.code] = false;
 });
 
-const leftRectUpdate: RectUpdate = (entity, scene) => {
+const leftRectUpdate: PhysicalRectUpdate = (entity, scene) => {
   const SPEED = 400;
   const { dt } = scene.timer;
   let colided = false;
 
-  if (keys["KeyA"] === true) entity.position.x -= SPEED * dt;
-  if (keys["KeyD"] === true) entity.position.x += SPEED * dt;
-  if (keys["KeyW"] === true) entity.position.y -= SPEED * dt;
-  if (keys["KeyS"] === true) entity.position.y += SPEED * dt;
+  const DELTA_POSITION = SPEED * dt;
+
+  if (keys["KeyD"] === true) entity.position.addX(DELTA_POSITION);
+  if (keys["KeyS"] === true) entity.position.addY(DELTA_POSITION);
+  if (keys["KeyA"] === true) entity.position.subtractX(DELTA_POSITION);
+  if (keys["KeyW"] === true) entity.position.subtractY(DELTA_POSITION);
 
   for (const other of scene.entities.list.values()) {
     if (entity.checkCollision(other)) {
@@ -39,14 +42,11 @@ const leftRectUpdate: RectUpdate = (entity, scene) => {
     }
   }
   if (colided) {
-    alert("Game over!");
-    entity.position.x = 0;
-    entity.position.y = 0;
-    Object.keys(keys).forEach((item) => delete keys[item]);
-  } 
+    console.log(colided);
+  }
 };
 
-const left = new RectEntity({
+const left = new PhysicalRect({
   initialPosition: { x: 0, y: 0 },
   height: 40,
   width: 40,
@@ -56,9 +56,21 @@ const left = new RectEntity({
   updateCb: leftRectUpdate,
 });
 
-
 scene.entities.addEntity(left);
 scene.camera.trackEntity(left);
+
+for (let i = 0; i < 1000; i++) {
+  scene.entities.addEntity(
+    new RectEntity({
+      initialPosition: {
+        x: Math.random() * 200,
+        y: Math.random() * 100000,
+      },
+      fillColor: "red",
+      strokeColor: "green",
+    })
+  );
+}
 
 game.engine.scenes.addScene(scene);
 game.engine.scenes.changeCurrentScene(scene);
