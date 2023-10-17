@@ -30,10 +30,14 @@ const leftRectUpdate: PhysicalRectUpdate = (entity, scene) => {
 
   const DELTA_POSITION = SPEED * dt;
 
-  if (keys["KeyD"] === true) entity.position.addX(DELTA_POSITION);
-  if (keys["KeyS"] === true) entity.position.addY(DELTA_POSITION);
-  if (keys["KeyA"] === true) entity.position.subtractX(DELTA_POSITION);
-  if (keys["KeyW"] === true) entity.position.subtractY(DELTA_POSITION);
+  if (keys["KeyD"] === true) {
+    entity.velocity.b.setX(DELTA_POSITION);
+  }
+  if (keys["KeyA"] === true) {
+    entity.velocity.b.setX(DELTA_POSITION * -1);
+  }
+  if (!keys["KeyA"] && !keys["KeyD"]) entity.velocity.b.setX(0);
+  if (keys["Space"] === true && entity.isGrounded) entity.velocity.b.setY(-10);
 
   for (const other of scene.entities.list.values()) {
     if (entity.checkCollision(other)) {
@@ -58,19 +62,17 @@ const left = new PhysicalRect({
 
 scene.entities.addEntity(left);
 scene.camera.trackEntity(left);
-
-for (let i = 0; i < 1000; i++) {
-  scene.entities.addEntity(
-    new RectEntity({
-      initialPosition: {
-        x: Math.random() * 200,
-        y: Math.random() * 100000,
-      },
-      fillColor: "red",
-      strokeColor: "green",
-    })
-  );
-}
+scene.entities.addEntity(
+  new RectEntity({
+    initialPosition: {
+      x: -400,
+      y: 500,
+    },
+    width: 2000,
+    height: 40,
+    fillColor: "red",
+  })
+);
 
 game.engine.scenes.addScene(scene);
 game.engine.scenes.changeCurrentScene(scene);
