@@ -1,9 +1,9 @@
 import { Entity, Timer } from "../engine";
 import { InitialEntityConstructorProps } from "../engine/entity";
-import { Point } from "../lib/point";
+import { PointBaseCoordiantes } from "../lib/point";
 import { Vector2D } from "../lib/vector";
 
-export class PhysicalEntity extends Entity {
+export abstract class PhysicalEntity extends Entity {
   velocity: Vector2D = new Vector2D();
   acceleration: Vector2D = new Vector2D();
   public isGrounded = false;
@@ -12,9 +12,7 @@ export class PhysicalEntity extends Entity {
     super(props);
   }
 
-  public render(ctx: CanvasRenderingContext2D): void {
-    if (this._render) this._render(ctx);
-  }
+  public abstract render(ctx: CanvasRenderingContext2D): void;
 
   public update(timer: Timer): void {
     this.isGrounded = this.checkIsGrounded();
@@ -66,22 +64,22 @@ export class PhysicalEntity extends Entity {
     return grounded;
   }
 
-  private predictFuturePosition(): Point {
+  private predictFuturePosition(): PointBaseCoordiantes {
     const futureX = this.position.x + this.velocity.b.x;
     const futureY = this.position.y + this.velocity.b.y;
 
-    return new Point(futureX, futureY);
+    return { x: futureX, y: futureY };
   }
 
   private checkWasEntityThroughOtherEntity(
     other: Entity,
-    futurePosition: Point
+    futurePosition: PointBaseCoordiantes
   ): boolean {
     const otherSides = other.sides;
     const thisFutureSides = {
       top: this.sides.top + futurePosition.y - this.position.y,
       left: this.sides.left + futurePosition.x - this.position.x,
-      right: this.sides.left + futurePosition.x - this.position.x,
+      right: this.sides.right + futurePosition.x - this.position.x,
       bottom: this.sides.bottom + futurePosition.y - this.position.y,
     };
 

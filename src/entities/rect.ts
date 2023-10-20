@@ -55,25 +55,27 @@ export class RectEntity extends Entity {
   public render(ctx: CanvasRenderingContext2D): void {
     const { x, y } = this.coordinatesForRender;
     const { width, height } = this;
-
-    ctx.save();
-    ctx.fillStyle = this.fillColor;
-    ctx.strokeStyle = this.strokeColor;
-    ctx.lineWidth = this.strokeLineWidth;
-    if (this.fill) {
-      ctx.fillRect(x, y, width, height);
+    if (this.sprite) {
+      this.sprite.render(ctx, this);
+    } else {
+      ctx.save();
+      ctx.fillStyle = this.fillColor;
+      ctx.strokeStyle = this.strokeColor;
+      ctx.lineWidth = this.strokeLineWidth;
+      if (this.fill) {
+        ctx.fillRect(x, y, width, height);
+      }
+      if (this.stroke) {
+        ctx.strokeRect(x, y, width, height);
+      }
+      ctx.restore();
     }
-    if (this.stroke) {
-      ctx.strokeRect(x, y, width, height);
-    }
-    ctx.restore();
   }
 
   public update(timer: Timer): void {
     if (!this.scene) throw new Error("Cannot find scene in entity " + this.id);
-    // увеличиваем время с каждым обновлением
-    // Используем функцию синуса для движения влево-вправо
 
+    this.sprite?.update(timer);
     if (this.updateCb) this.updateCb(this, this.scene, timer);
   }
 }

@@ -3,7 +3,7 @@ import { Camera } from "./camera";
 import { EntitiesCollection } from "./entity";
 
 export interface SceneConfig {
-  enablePhysics: boolean
+  enablePhysics: boolean;
 }
 
 export class Scene {
@@ -26,6 +26,7 @@ export class Scene {
   public get timer(): Timer {
     return this._timer;
   }
+  private _showFPS: boolean = false;
 
   constructor(canvas: HTMLCanvasElement) {
     const entitiesCollection = new EntitiesCollection();
@@ -55,9 +56,19 @@ export class Scene {
 
   private drawBackground(ctx: CanvasRenderingContext2D) {
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    ctx.rect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    ctx.fillStyle = 'black';
-    ctx.fill();
+  }
+
+  private renderFPS(ctx: CanvasRenderingContext2D) {
+    if (this._showFPS) {
+      ctx.fillStyle = "yellow";
+      ctx.strokeStyle = "black";
+      const fps = this._timer.fps + " FPS";
+      ctx.font = "bold 24px arial";
+      ctx.textAlign = "left";
+      ctx.textBaseline = "top";
+      ctx.fillText(fps, 0, 0);
+      ctx.strokeText(fps, 0, 0);
+    }
   }
 
   private render(ctx: CanvasRenderingContext2D): void {
@@ -66,6 +77,7 @@ export class Scene {
     this.drawBackground(ctx);
     this._entities.list.forEach((item) => item.render(ctx));
     this.camera.resetTransform(ctx);
+    this.renderFPS(ctx);
     ctx.restore();
   }
 
@@ -92,6 +104,10 @@ export class Scene {
   public stop() {
     if (!this.RAFid) return;
     window.cancelAnimationFrame(this.RAFid);
+  }
+
+  public showFPS(flag: boolean): void {
+    this._showFPS = flag;
   }
 }
 

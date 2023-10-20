@@ -1,5 +1,6 @@
 import { Scene, Timer } from ".";
 import { Point } from "../lib/point";
+import { Sprite } from "../lib/sprite";
 
 export interface InitialEntityConstructorProps {
   initialPosition?: { x: number; y: number };
@@ -7,6 +8,7 @@ export interface InitialEntityConstructorProps {
   height?: number;
   update?: (timer: Timer) => void;
   render?: (ctx: CanvasRenderingContext2D) => void;
+  sprite?: Sprite;
 }
 
 interface EntitySides {
@@ -23,6 +25,7 @@ export abstract class Entity {
   public scene: Scene | null = null;
   public width: number = 0;
   public height: number = 0;
+  protected sprite: Sprite | null = null;
   protected _update: ((timer: Timer) => void) | null = null;
   protected _render: ((ctx: CanvasRenderingContext2D) => void) | null = null;
 
@@ -51,6 +54,7 @@ export abstract class Entity {
       if (props.height) this.height = props.height;
       if (props.update) this._update = props.update;
       if (props.render) this._render = props.render;
+      if (props.sprite) this.sprite = props.sprite;
     }
   }
 
