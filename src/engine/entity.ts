@@ -21,8 +21,11 @@ interface EntitySides {
 export abstract class Entity {
   public static ENTITIES_COUNT = 0;
   private _id: string;
-  public position: Point = new Point();
-  public scene: Scene | null = null;
+  public readonly position: Point = new Point();
+  private _scene: Scene | null = null;
+  public get scene(): Scene | null {
+    return this._scene;
+  }
   public width: number = 0;
   public height: number = 0;
   protected sprite: Sprite | null = null;
@@ -34,8 +37,8 @@ export abstract class Entity {
   }
 
   get coordinatesForRender() {
-    const x = this.position.x - this.scene!.camera.position.x;
-    const y = this.position.y - this.scene!.camera.position.y;
+    const x = this.position.x - this._scene!.camera.position.x;
+    const y = this.position.y - this._scene!.camera.position.y;
 
     return { x, y };
   }
@@ -56,6 +59,10 @@ export abstract class Entity {
       if (props.render) this._render = props.render;
       if (props.sprite) this.sprite = props.sprite;
     }
+  }
+
+  public setScene(scene: Scene | null) {
+    this._scene = scene;
   }
 
   get sides(): EntitySides {
@@ -95,7 +102,7 @@ export class EntitiesCollection {
   }
 
   public addEntity(entity: Entity) {
-    entity.scene = this.scene;
+    entity.setScene(this.scene);
     this._entities.set(entity.id, entity);
   }
 

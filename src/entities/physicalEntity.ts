@@ -4,9 +4,12 @@ import { PointBaseCoordiantes } from "../lib/point";
 import { Vector2D } from "../lib/vector";
 
 export abstract class PhysicalEntity extends Entity {
-  velocity: Vector2D = new Vector2D();
-  acceleration: Vector2D = new Vector2D();
-  public isGrounded = false;
+  readonly velocity: Vector2D = new Vector2D();
+  readonly acceleration: Vector2D = new Vector2D();
+  private _isGrounded = false;
+  public get isGrounded() {
+    return this._isGrounded;
+  }
 
   constructor(props?: InitialEntityConstructorProps) {
     super(props);
@@ -15,8 +18,8 @@ export abstract class PhysicalEntity extends Entity {
   public abstract render(ctx: CanvasRenderingContext2D): void;
 
   public update(timer: Timer): void {
-    this.isGrounded = this.checkIsGrounded();
-    if (this.isGrounded === false) this.applyGravity(timer);
+    this._isGrounded = this.checkIsGrounded();
+    if (this._isGrounded === false) this.applyGravity(timer);
     else {
       this.velocity.b.setY(0);
       this.acceleration.b.setY(0);

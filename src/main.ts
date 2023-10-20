@@ -49,11 +49,11 @@ image.src = "/assets/sprite.png";
 const sprite = new Sprite({
   uniqueName: "player_runs",
   img: image,
-  frameHeight: 153,
-  frameWidth: 131,
+  frameHeight: 150,
+  frameWidth: 130,
   interval: 0.032,
   numberOfFrames: 23,
-  numberOfRows: 4,
+  numberOfRows: 5,
   numberOfColumns: 7,
 });
 
@@ -82,6 +82,8 @@ scene.entities.addEntity(
     fillColor: "red",
   })
 );
+
+
 
 game.engine.scenes.addScene(scene);
 game.engine.scenes.changeCurrentScene(scene);

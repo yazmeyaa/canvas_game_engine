@@ -20,13 +20,11 @@ export interface RectProps extends InitialEntityConstructorProps {
 }
 
 export class PhysicalRect extends PhysicalEntity {
-  public fillColor: string = "black";
-  public strokeColor: string = "black";
-  public width: number = 50;
-  public height: number = 50;
-  public fill: boolean = true;
-  public stroke: boolean = true;
-  public strokeLineWidth: number = 1;
+  private fillColor: string = "black";
+  private strokeColor: string = "black";
+  private fill: boolean = true;
+  private stroke: boolean = true;
+  private strokeLineWidth: number = 1;
   private updateCb: null | PhysicalRectUpdate = null;
 
   constructor(props?: RectProps) {
@@ -45,7 +43,9 @@ export class PhysicalRect extends PhysicalEntity {
       if (fillColor) this.fillColor = fillColor;
       if (strokeColor) this.strokeColor = strokeColor;
       if (height) this.height = height;
+      else this.height = 50
       if (width) this.width = width;
+      else this.width = 50;
       if (typeof fill !== "undefined") this.fill = fill;
       if (typeof stroke !== "undefined") this.stroke = stroke;
       if (strokeLineWidth) this.strokeLineWidth = strokeLineWidth;
