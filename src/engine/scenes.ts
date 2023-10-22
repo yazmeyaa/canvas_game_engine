@@ -1,9 +1,14 @@
 import { Timer } from ".";
 import { Camera } from "./camera";
 import { EntitiesCollection } from "./entity";
+import { SceneSprites, SpriteList } from "../lib/sprite";
 
 export interface SceneConfig {
   enablePhysics: boolean;
+}
+
+export interface SceneProps {
+  initialSprites?: SpriteList
 }
 
 export class Scene {
@@ -15,6 +20,7 @@ export class Scene {
   private _timer: Timer;
   private _camera: Camera;
   private _physics: ScenePhysics;
+  public readonly spriteList: SceneSprites;
   public get physics(): ScenePhysics {
     return this._physics;
   }
@@ -28,21 +34,24 @@ export class Scene {
   }
   private _showFPS: boolean = false;
 
-  constructor(canvas: HTMLCanvasElement) {
+  constructor(canvas: HTMLCanvasElement, config?: SceneProps) {
     const entitiesCollection = new EntitiesCollection();
     entitiesCollection.scene = this;
     this._entities = entitiesCollection;
     this._timer = new Timer();
     this._physics = new ScenePhysics();
+    this.spriteList = new SceneSprites(config?.initialSprites);
 
     this._id = `scene_${Scene.CREATED_SCENES_COUNT}`;
     Scene.CREATED_SCENES_COUNT += 1;
 
     this._camera = new Camera({
-      maxX: canvas.width,
-      maxY: canvas.height,
-      minX: 0,
-      minY: 0,
+      viewBounds: {
+        maxX: canvas.width,
+        maxY: canvas.height,
+        minX: 0,
+        minY: 0,
+      }
     });
   }
 

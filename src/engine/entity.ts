@@ -1,6 +1,6 @@
 import { Scene, Timer } from ".";
 import { Point } from "../lib/point";
-import { Sprite } from "../lib/sprite";
+import { Sprite, SpriteProps } from "../lib/sprite";
 
 export interface InitialEntityConstructorProps {
   initialPosition?: { x: number; y: number };
@@ -28,7 +28,7 @@ export abstract class Entity {
   }
   public width: number = 0;
   public height: number = 0;
-  protected sprite: Sprite | null = null;
+  public sprite: Sprite | null = null;
   protected _update: ((timer: Timer) => void) | null = null;
   protected _render: ((ctx: CanvasRenderingContext2D) => void) | null = null;
 
@@ -65,7 +65,16 @@ export abstract class Entity {
     this._scene = scene;
   }
 
-  get sides(): EntitySides {
+  public setSprite(uniqueName: string, spriteProps: Omit<SpriteProps, 'img'>) {
+    if(!this.scene) throw new Error("Scene is not defined for entity " + this.id)
+    const sprite = this.scene.spriteList.getSprite(uniqueName);
+    this.sprite = new Sprite({
+      ...spriteProps,
+      img: sprite,
+    })
+  }
+
+  public get sides(): EntitySides {
     const top = this.position.y;
     const bottom = this.position.y + this.height;
     const left = this.position.x;

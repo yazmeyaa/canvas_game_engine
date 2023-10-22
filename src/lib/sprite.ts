@@ -66,10 +66,7 @@ export class Sprite {
   constructor(props: SpriteProps) {
     if (!props.img)
       throw new Error("`img` argument is not provided in Sprite constructor!");
-    if (typeof props.img === "string") {
-      this.image = new Image();
-      this.image.src = props.img;
-    }
+
     if (props.img instanceof HTMLImageElement) {
       if (!props.img.src) throw new Error("Sprite source is not provided!");
       this.image = props.img;
@@ -123,5 +120,52 @@ export class Sprite {
     const dh = entity.height;
     ctx.drawImage(this.image, sx, sy, sw, sh, dx, dy, dw, dh);
     ctx.restore();
+  }
+}
+
+export type SpriteList = Map<string, HTMLImageElement>;
+export class SceneSprites {
+  private list: SpriteList = new Map();
+  constructor(initial?: SpriteList) {
+    if (initial) {
+      this.list = initial;
+    }
+  }
+
+  /**
+   * Add sprite to scene images list
+   * @param uniqueName Unique name of sprite image
+   * @param sprite HTMLImageElement of sprite
+   */
+  public addSprite(sprite: HTMLImageElement, uniqueName: string): void;
+  /**
+   * Add sprite to scene images list
+   * @param uniqueName Unique name of sprite image
+   * @param sprite URL of sprite
+   */
+  public addSprite(sprite: string, uniqueName: string): void;
+  /**
+   * Add sprite to scene images list
+   * @param uniqueName Unique name of sprite image
+   * @param sprite URL or HTMLImageElement of sprite
+   */
+  public addSprite(sprite: HTMLImageElement | string, uniqueName: string) {
+    if (this.list.has(uniqueName))
+      throw new Error("Sprite " + uniqueName + " already exist!");
+    if (typeof sprite === "string") {
+      const image = new Image();
+      image.src = sprite;
+      this.list.set(uniqueName, image);
+    } else if (sprite instanceof Image) {
+      if (!sprite.src) throw new Error("Sprite source is not provided!");
+      this.list.set(uniqueName, sprite);
+    }
+  }
+
+  getSprite(uniqueName: string): HTMLImageElement {
+    const sprite = this.list.get(uniqueName);
+    if (!sprite)
+      throw new Error("Sprite with name " + uniqueName + " is not found!");
+    return sprite;
   }
 }

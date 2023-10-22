@@ -2,7 +2,7 @@ import { Scene } from "./engine";
 import { RectEntity } from "./entities";
 import { PhysicalRect, PhysicalRectUpdate } from "./entities/physicalRect";
 import { Game } from "./game";
-import { Sprite } from "./lib/sprite";
+import { SpriteProps } from "./lib/sprite";
 
 const canvas = document.getElementById("canvas") as HTMLCanvasElement;
 canvas.height = window.innerHeight;
@@ -32,10 +32,10 @@ const leftRectUpdate: PhysicalRectUpdate = (entity, scene) => {
 
   if (keys["KeyD"] === true) {
     entity.velocity.b.setX(DELTA_POSITION);
-    sprite.flip(false);
+    entity.sprite?.flip(false);
   }
   if (keys["KeyA"] === true) {
-    sprite.flip(true);
+    entity.sprite?.flip(true);
     entity.velocity.b.setX(-DELTA_POSITION);
   }
   if (!keys["KeyA"] && !keys["KeyD"]) entity.velocity.b.setX(0);
@@ -46,7 +46,8 @@ const leftRectUpdate: PhysicalRectUpdate = (entity, scene) => {
 
 const image = new Image();
 image.src = "/assets/sprite.png";
-const sprite = new Sprite({
+
+const spriteProps: SpriteProps = {
   uniqueName: "player_runs",
   img: image,
   frameHeight: 150,
@@ -55,8 +56,7 @@ const sprite = new Sprite({
   numberOfFrames: 23,
   numberOfRows: 5,
   numberOfColumns: 7,
-});
-
+};
 
 const player = new PhysicalRect({
   initialPosition: { x: 0, y: 0 },
@@ -66,15 +66,18 @@ const player = new PhysicalRect({
   strokeColor: "black",
   strokeLineWidth: 2,
   updateCb: leftRectUpdate,
-  sprite: sprite,
 });
-scene.showFPS(true);
+
+scene.spriteList.addSprite(image, "player_runs");
 scene.entities.addEntity(player);
+player.setSprite("player_runs", spriteProps);
+
+scene.showFPS(true);
 scene.camera.trackEntity(player);
 scene.entities.addEntity(
   new RectEntity({
     initialPosition: {
-      x: -400,
+      x: 0,
       y: 500,
     },
     width: 2000,
@@ -83,12 +86,25 @@ scene.entities.addEntity(
   })
 );
 
-
-
 game.engine.scenes.addScene(scene);
 game.engine.scenes.changeCurrentScene(scene);
 
 game.engine.scenes.currentScene?.play();
-setInterval(() => {
-  console.log(game);
-}, 2000);
+
+const deadZoneButton = document.getElementById(
+  "dead_zone_button"
+) as HTMLButtonElement;
+deadZoneButton.addEventListener("click", (event) => {
+  event.preventDefault();
+  if (scene.camera.deadZone === null) {
+    const DEAD_ZONE = {
+      minX: -100,
+      maxX: 2100,
+      maxY: 1200,
+      minY: 0,
+    };
+    scene.camera.setDeadZone(DEAD_ZONE);
+  } else {
+    scene.camera.setDeadZone(null);
+  }
+});

@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "test": "jest"
+    "test": "jest",
+    "predeploy": "pnpm run build",
+    "deploy": "gh-pages -d dist"
   },
   "devDependencies": {
     "@testdeck/mocha": "^0.3.3",
@@ -17,6 +19,7 @@
     "@typescript-eslint/parser": "^6.7.5",
     "chai": "^4.3.10",
     "eslint": "^8.51.0",
+    "gh-pages": "^6.0.0",
     "jest": "^29.7.0",
     "jest-canvas-mock": "^2.5.2",
     "mocha": "^10.2.0",
@@ -27,5 +30,6 @@
   "dependencies": {
     "jest-environment-jsdom": "^29.7.0",
     "ts-jest": "^29.1.1"
-  }
+  },
+  "homepage": "https://github.com/yazmeyaa/canvas_game_engine"
 }

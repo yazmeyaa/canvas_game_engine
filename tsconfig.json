@@ -20,5 +20,6 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "tests/core.test.ts", "tests/core.test.ts"]
+  "include": ["src", "tests/core.test.ts", "tests/core.test.ts"],
+  "exclude": ["node_modules"]
 }

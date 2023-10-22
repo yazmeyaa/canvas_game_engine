@@ -8,23 +8,57 @@ export type CameraViewBoundsProps = {
   maxY: number;
 };
 
-export class CameraViewBounds {
+export type CameraDeadZoneProps = {
   minX: number;
   maxX: number;
   minY: number;
   maxY: number;
+};
+
+export class CameraViewBounds {
+  private _minX: number;
+  private _maxY: number;
+  private _maxX: number;
+  private _minY: number;
+
+  public get minX(): number {
+    return this._minX;
+  }
+  public get maxX(): number {
+    return this._maxX;
+  }
+  public get minY(): number {
+    return this._minY;
+  }
+  public get maxY(): number {
+    return this._maxY;
+  }
 
   constructor(props: CameraViewBoundsProps) {
-    this.minX = props.minX;
-    this.maxX = props.maxX;
-    this.minY = props.minY;
-    this.maxY = props.maxY;
+    this._minX = props.minX;
+    this._maxX = props.maxX;
+    this._minY = props.minY;
+    this._maxY = props.maxY;
+  }
+
+  setBounds(props: CameraViewBoundsProps) {
+    const { maxX, maxY, minX, minY } = props;
+    this._maxX = maxX;
+    this._maxY = maxY;
+    this._minX = minX;
+    this._minY = minY;
   }
 }
+
+export type CameraConstructorProps = {
+  viewBounds: CameraViewBoundsProps;
+  deadZone?: CameraDeadZoneProps;
+};
 
 export class Camera {
   position: Point = new Point();
   viewBounds: CameraViewBounds;
+  deadZone: CameraViewBounds | null = null;
   private _trackedEntity: Entity | null = null;
   public get trackedEntity(): Entity | null {
     return this._trackedEntity;
@@ -32,8 +66,9 @@ export class Camera {
 
   scale: number = 1;
 
-  constructor(props: CameraViewBoundsProps) {
-    this.viewBounds = new CameraViewBounds(props);
+  constructor(props: CameraConstructorProps) {
+    this.viewBounds = new CameraViewBounds(props.viewBounds);
+    if (props.deadZone) this.deadZone = new CameraViewBounds(props.deadZone);
   }
 
   public get centerCameraCoordinates(): { x: number; y: number } {
@@ -41,7 +76,17 @@ export class Camera {
   }
 
   setViewBounds(bounds: CameraViewBoundsProps): void {
-    this.viewBounds = new CameraViewBounds(bounds);
+    this.viewBounds.setBounds(bounds);
+  }
+
+  setDeadZone(deadZone: CameraDeadZoneProps | null): void {
+    if (deadZone) {
+      if (!this.deadZone) this.deadZone = new CameraViewBounds(deadZone);
+      else this.deadZone.setBounds(deadZone);
+    }
+    if (deadZone === null) {
+      this.deadZone = null;
+    }
   }
 
   trackEntity(entity: Entity) {
@@ -59,6 +104,13 @@ export class Camera {
     if (this._trackedEntity) {
       this.centerOnTrackedEntity(ctx);
     }
+    if (
+      this.deadZone &&
+      this.position.x + this.viewBounds.maxX > this.deadZone.maxX
+    )
+      this.position.setX(this.deadZone.maxX - this.viewBounds.maxX);
+    if (this.deadZone && this.position.x < this.deadZone.minX)
+      this.position.setX(this.deadZone.minX);
   }
 
   private centerOnTrackedEntity(ctx: CanvasRenderingContext2D) {
