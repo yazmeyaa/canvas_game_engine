@@ -105,6 +105,13 @@ export class Sprite {
     this._isFlipped = flag;
   }
 
+  public reset() {
+    this._frameIndex = 0;
+    this._elapsedTime = 0;
+    this._col = 0;
+    this._row = 0;
+  }
+
   public render(ctx: CanvasRenderingContext2D, entity: Entity) {
     ctx.save();
     if (this._isFlipped) ctx.scale(-1, 1);

@@ -1,6 +1,6 @@
 import { Scene, Timer } from ".";
+import { Animations, AnimationsConstructorProps } from "../lib/animations";
 import { Point } from "../lib/point";
-import { Sprite, SpriteProps } from "../lib/sprite";
 
 export interface InitialEntityConstructorProps {
   initialPosition?: { x: number; y: number };
@@ -8,7 +8,7 @@ export interface InitialEntityConstructorProps {
   height?: number;
   update?: (timer: Timer) => void;
   render?: (ctx: CanvasRenderingContext2D) => void;
-  sprite?: Sprite;
+  animations?: AnimationsConstructorProps;
 }
 
 interface EntitySides {
@@ -28,9 +28,9 @@ export abstract class Entity {
   }
   public width: number = 0;
   public height: number = 0;
-  public sprite: Sprite | null = null;
   protected _update: ((timer: Timer) => void) | null = null;
   protected _render: ((ctx: CanvasRenderingContext2D) => void) | null = null;
+  public animations: Animations = new Animations(this);
 
   public get id(): string {
     return this._id;
@@ -57,21 +57,12 @@ export abstract class Entity {
       if (props.height) this.height = props.height;
       if (props.update) this._update = props.update;
       if (props.render) this._render = props.render;
-      if (props.sprite) this.sprite = props.sprite;
+      if (props.animations) this.animations = new Animations(this, props.animations);
     }
   }
 
   public setScene(scene: Scene | null) {
     this._scene = scene;
-  }
-
-  public setSprite(uniqueName: string, spriteProps: Omit<SpriteProps, 'img'>) {
-    if(!this.scene) throw new Error("Scene is not defined for entity " + this.id)
-    const sprite = this.scene.spriteList.getSprite(uniqueName);
-    this.sprite = new Sprite({
-      ...spriteProps,
-      img: sprite,
-    })
   }
 
   public get sides(): EntitySides {

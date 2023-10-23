@@ -55,8 +55,8 @@ export class RectEntity extends Entity {
   public render(ctx: CanvasRenderingContext2D): void {
     const { x, y } = this.coordinatesForRender;
     const { width, height } = this;
-    if (this.sprite) {
-      this.sprite.render(ctx, this);
+    if (this.animations.currentAnimation) {
+      this.animations.currentAnimation.render(ctx, this);
     } else {
       ctx.save();
       ctx.fillStyle = this.fillColor;
@@ -75,7 +75,7 @@ export class RectEntity extends Entity {
   public update(timer: Timer): void {
     if (!this.scene) throw new Error("Cannot find scene in entity " + this.id);
 
-    this.sprite?.update(timer);
+    this.animations.currentAnimation?.update(timer);
     if (this.updateCb) this.updateCb(this, this.scene, timer);
   }
 }

@@ -57,8 +57,8 @@ export class PhysicalRect extends PhysicalEntity {
     const { x, y } = this.coordinatesForRender;
     const { width, height } = this;
 
-    if (this.sprite) {
-      this.sprite.render(ctx, this);
+    if (this.animations.currentAnimation) {
+      this.animations.currentAnimation.render(ctx, this);
     } else {
       ctx.save();
       ctx.fillStyle = this.fillColor;
@@ -77,7 +77,7 @@ export class PhysicalRect extends PhysicalEntity {
   public update(timer: Timer): void {
     if (!this.scene) throw new Error("Cannot find scene in entity " + this.id);
     super.update(timer);
-    this.sprite?.update(timer)
+    this.animations.currentAnimation?.update(timer)
 
     if (this.updateCb) this.updateCb(this, this.scene, timer);
   }

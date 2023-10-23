@@ -155,7 +155,7 @@ export class Camera {
   }
 
   zoomIn() {
-    this.scale *= 1.0005;
+    this.scale *= 1.1;
   }
 
   zoomOut() {
