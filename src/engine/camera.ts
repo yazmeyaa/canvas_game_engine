@@ -111,6 +111,14 @@ export class Camera {
       this.position.setX(this.deadZone.maxX - this.viewBounds.maxX);
     if (this.deadZone && this.position.x < this.deadZone.minX)
       this.position.setX(this.deadZone.minX);
+
+    if (
+      this.deadZone &&
+      this.position.y + this.viewBounds.maxY > this.deadZone.maxY
+    )
+      this.position.setY(this.deadZone.maxY - this.viewBounds.maxY);
+    if (this.deadZone && this.position.y < this.deadZone.minY)
+      this.position.setY(this.deadZone.minY);
   }
 
   private centerOnTrackedEntity(ctx: CanvasRenderingContext2D) {

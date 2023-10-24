@@ -43,7 +43,7 @@ const leftRectUpdate: PhysicalRectUpdate = (entity, scene) => {
     !keys["ArrowLeft"] &&
     !keys["ArrowRight"]
   ) {
-    entity.velocity.b.setX(entity.velocity.b.x / 1.5);
+    entity.velocity.b.setX(entity.velocity.b.x / 1.3);
     entity.animations.setCurrentSprite("player_idle");
   } else {
     entity.animations.setCurrentSprite("player_run");
@@ -51,7 +51,7 @@ const leftRectUpdate: PhysicalRectUpdate = (entity, scene) => {
   if (keys["Space"] === true && entity.isGrounded) entity.velocity.b.setY(-4);
   if(!entity.isGrounded) entity.animations.setCurrentSprite('player_jump')
 
-  if (entity.position.y > 600) entity.position.setCoords(0, 0);
+  if (entity.position.y > 900) entity.position.setCoords(0, 0);
 };
 
 const prefix =
@@ -118,10 +118,10 @@ scene.entities.addEntity(
   new RectEntity({
     initialPosition: {
       x: 0,
-      y: 500,
+      y: 900,
     },
     width: 2000,
-    height: 40,
+    height: 15,
     fillColor: "black",
   })
 );
@@ -139,7 +139,7 @@ deadZoneButton.addEventListener("click", (event) => {
     const DEAD_ZONE = {
       minX: -100,
       maxX: 2100,
-      maxY: 1200,
+      maxY: 900,
       minY: 0,
     };
     scene.camera.setDeadZone(DEAD_ZONE);
